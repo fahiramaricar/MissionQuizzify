@@ -3,3 +3,7 @@ chromadb
 langchain
 langchain-google-vertexai
 pypdf
+PyPDF2
+cryptography
+langchain-chroma
+google-generativeai

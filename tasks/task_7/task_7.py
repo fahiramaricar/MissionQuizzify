@@ -3,10 +3,10 @@ from langchain_google_vertexai import VertexAI
 from langchain_core.prompts import PromptTemplate
 import os
 import sys
-sys.path.append(os.path.abspath('../../'))
+sys.path.append(os.path.abspath('C:\\Fahira\\RadicalAI_Internship\\mission-quizify'))
 
 class QuizGenerator:
-    def __init__(self, topic=None, num_questions=1, vectorstore=None):
+    def __init__(self, topic=None,num_questions=1,vectorstore=None):
         """
         Initializes the QuizGenerator with a required topic, the number of questions for the quiz,
         and an optional vectorstore for querying related information.
@@ -70,9 +70,17 @@ class QuizGenerator:
 
         Note: Ensure you have appropriate access or API keys if required by the model or platform.
         """
+        
+
+
         self.llm = VertexAI(
-            ############# YOUR CODE HERE ############
+           temperature=0.2, model_name="gemini-pro", max_output_tokens=1000
         )
+
+    
+       
+    
+
         
     def generate_question_with_vectorstore(self):
         """
@@ -101,20 +109,26 @@ class QuizGenerator:
         """
         ############# YOUR CODE HERE ############
         # Initialize the LLM from the 'init_llm' method if not already initialized
+        if not self.llm:
+            self.init_llm()
         # Raise an error if the vectorstore is not initialized on the class
-        ############# YOUR CODE HERE ############
+        if not self.vectorstore:
+            raise ValueError("Vectorstore is not initialized. Please provide a vectorstore.")
+        
         
         from langchain_core.runnables import RunnablePassthrough, RunnableParallel
 
         ############# YOUR CODE HERE ############
         # Enable a Retriever using the as_retriever() method on the VectorStore object
         # HINT: Use the vectorstore as the retriever initialized on the class
-        ############# YOUR CODE HERE ############
+
+        retriever = self.vectorstore.as_retriever()
         
         ############# YOUR CODE HERE ############
         # Use the system template to create a PromptTemplate
         # HINT: Use the .from_template method on the PromptTemplate class and pass in the system template
-        ############# YOUR CODE HERE ############
+        prompt_template = PromptTemplate.from_template(self.system_template)
+
         
         # RunnableParallel allows Retriever to get relevant documents
         # RunnablePassthrough allows chain.invoke to send self.topic to LLM
@@ -125,7 +139,7 @@ class QuizGenerator:
         ############# YOUR CODE HERE ############
         # Create a chain with the Retriever, PromptTemplate, and LLM
         # HINT: chain = RETRIEVER | PROMPT | LLM 
-        ############# YOUR CODE HERE ############
+        chain = setup_and_retrieval | prompt_template | self.llm
 
         # Invoke the chain with the topic as input
         response = chain.invoke(self.topic)
@@ -139,11 +153,13 @@ if __name__ == "__main__":
     from tasks.task_5.task_5 import ChromaCollectionCreator
     
     
+    
     embed_config = {
         "model_name": "textembedding-gecko@003",
-        "project": "YOUR-PROJECT-ID-HERE",
+        "project": "original-frame-420018",
         "location": "us-central1"
     }
+
     
     screen = st.empty()
     with screen.container():
@@ -154,6 +170,9 @@ if __name__ == "__main__":
         embed_client = EmbeddingClient(**embed_config) # Initialize from Task 4
     
         chroma_creator = ChromaCollectionCreator(processor, embed_client)
+
+        
+    
 
         question = None
     
@@ -167,10 +186,11 @@ if __name__ == "__main__":
             submitted = st.form_submit_button("Submit")
             if submitted:
                 chroma_creator.create_chroma_collection()
-                
+                                
                 st.write(topic_input)
                 
                 # Test the Quiz Generator
+                
                 generator = QuizGenerator(topic_input, questions, chroma_creator)
                 question = generator.generate_question_with_vectorstore()
 

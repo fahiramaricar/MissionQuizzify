@@ -2,7 +2,7 @@ import streamlit as st
 import os
 import sys
 import json
-sys.path.append(os.path.abspath('../../'))
+sys.path.append(os.path.abspath('C:\\Fahira\\RadicalAI_Internship\\mission-quizify'))
 from tasks.task_3.task_3 import DocumentProcessor
 from tasks.task_4.task_4 import EmbeddingClient
 from tasks.task_5.task_5 import ChromaCollectionCreator
@@ -11,7 +11,7 @@ from langchain_core.prompts import PromptTemplate
 from langchain_google_vertexai import VertexAI
 
 class QuizGenerator:
-    def __init__(self, topic=None, num_questions=1, vectorstore=None):
+    def __init__(self, topic, num_questions, vectorstore):
         """
         Initializes the QuizGenerator with a required topic, the number of questions for the quiz,
         and an optional vectorstore for querying related information.
@@ -41,7 +41,8 @@ class QuizGenerator:
             3. Provide the correct answer for the question from the list of answers as key "answer"
             4. Provide an explanation as to why the answer is correct as key "explanation"
             
-            You must respond as a JSON object with the following structure:
+            
+            You must respond as following structure, DO NOT make it in JSON markdown format:
             {{
                 "question": "<question>",
                 "choices": [
@@ -103,7 +104,7 @@ class QuizGenerator:
         response = chain.invoke(self.topic)
         return response
 
-    def generate_quiz(self) -> list:
+    def generate_quiz(self, max_retries: int = 3) -> list:
         """
         Task: Generate a list of unique quiz questions based on the specified topic and number of questions.
 
@@ -124,27 +125,35 @@ class QuizGenerator:
         self.question_bank = [] # Reset the question bank
 
         for _ in range(self.num_questions):
-            ##### YOUR CODE HERE #####
-            question_str = # Use class method to generate question
-            
-            ##### YOUR CODE HERE #####
-            try:
-                # Convert the JSON String to a dictionary
-            except json.JSONDecodeError:
-                print("Failed to decode question JSON.")
-                continue  # Skip this iteration if JSON decoding fails
-            ##### YOUR CODE HERE #####
+          retries = 0  # Initialize retries counter for each question
+          # Attempt to generate a question with retries
+          while retries < max_retries:
+             # Generate a question using generate_question_with_vectorstore
+             question_str = self.generate_question_with_vectorstore()
 
-            ##### YOUR CODE HERE #####
-            # Validate the question using the validate_question method
-            if self.validate_question(question):
-                print("Successfully generated unique question")
-                # Add the valid and unique question to the bank
-            else:
-                print("Duplicate or invalid question detected.")
-            ##### YOUR CODE HERE #####
+             try:
+              # Convert the JSON String to a dictionary
+               question = json.loads(question_str)
+
+             # Validate the question using the validate_question method
+               if self.validate_question(question):
+                 print("Successfully generated unique question")
+              # Add the valid and unique question to the bank
+                 self.question_bank.append(question)
+                 break  # Exit the retry loop if the question is added successfully
+               else:
+                 print("Duplicate or invalid question detected.")
+
+             except json.JSONDecodeError:
+               print("Failed to decode question JSON.")
+               continue  # Skip this iteration if JSON decoding fails
+             retries += 1  # Increment retries counter
+          if retries == max_retries:
+          # If max_retries is reached without generating a unique question, log an error or take appropriate action
+            print("Failed to generate a unique question after maximum retries for question", len(self.question_bank) + 1)
 
         return self.question_bank
+
 
     def validate_question(self, question: dict) -> bool:
         """
@@ -169,8 +178,25 @@ class QuizGenerator:
         ##### YOUR CODE HERE #####
         # Consider missing 'question' key as invalid in the dict object
         # Check if a question with the same text already exists in the self.question_bank
-        ##### YOUR CODE HERE #####
-        return is_unique
+
+        # Extract the question text from the provided dictionary
+        question_text = question.get("question", "")
+
+        # Check if the question text is empty
+        if not question_text:
+          print("Invalid question: Missing 'question' key or empty question text.")
+          return False
+        
+        # Iterate over existing questions in `question_bank` and compare their texts
+        for existing_question in self.question_bank:
+           existing_question_text = existing_question.get("question", "")
+           if existing_question_text == question_text:
+            # If a duplicate question is found, return False
+             return False
+           
+        
+        # If no duplicates are found, return True
+        return True
 
 
 # Test Generating the Quiz
@@ -178,7 +204,7 @@ if __name__ == "__main__":
     
     embed_config = {
         "model_name": "textembedding-gecko@003",
-        "project": "YOUR-PROJECT-ID-HERE",
+        "project": "original-frame-420018",
         "location": "us-central1"
     }
     

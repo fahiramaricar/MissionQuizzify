@@ -3,6 +3,9 @@ db/
 __pycache__/
 application_key.json
 ai-data.json
+Authentication.json
+LICENSE
 
 # Tasks
 *_solution.py
+main.py
