@@ -2,10 +2,10 @@ import streamlit as st
 import os
 import sys
 import json
-sys.path.append(os.path.abspath('C:\\Fahira\\RadicalAI_Internship\\mission-quizify'))
-from tasks.task_3.task_3 import DocumentProcessor
-from tasks.task_4.task_4 import EmbeddingClient
-from tasks.task_5.task_5 import ChromaCollectionCreator
+sys.path.append(os.path.abspath('C:\\Fahira\\MyProjects\\RadicalAI_Internship\\mission-quizify'))
+from document_processor import DocumentProcessor
+from embedding_client import EmbeddingClient
+from chroma_collection_creator import ChromaCollectionCreator
 
 from langchain_core.prompts import PromptTemplate
 from langchain_google_vertexai import VertexAI
@@ -175,10 +175,7 @@ class QuizGenerator:
 
         Note: This method assumes `question` is a valid dictionary and `question_bank` has been properly initialized.
         """
-        ##### YOUR CODE HERE #####
-        # Consider missing 'question' key as invalid in the dict object
-        # Check if a question with the same text already exists in the self.question_bank
-
+        
         # Extract the question text from the provided dictionary
         question_text = question.get("question", "")
 

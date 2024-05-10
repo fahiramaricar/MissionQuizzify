@@ -2,14 +2,14 @@ import streamlit as st
 import os
 import sys
 import json
-sys.path.append(os.path.abspath('C:\\Fahira\\RadicalAI_Internship\\mission-quizify'))
-from tasks.task_3.task_3 import DocumentProcessor
-from tasks.task_4.task_4 import EmbeddingClient
-from tasks.task_5.task_5 import ChromaCollectionCreator
-from tasks.task_8.task_8 import QuizGenerator
+sys.path.append(os.path.abspath('C:\\Fahira\\MyProjects\\RadicalAI_Internship\\mission-quizify'))
+from document_processor import DocumentProcessor
+from embedding_client import EmbeddingClient
+from chroma_collection_creator import ChromaCollectionCreator
+from generate_quiz import QuizGenerator
 
 class QuizManager:
-    ##########################################################
+    
     def __init__(self, questions: list):
         """
         Task: Initialize the QuizManager class with a list of quiz questions.
@@ -30,7 +30,7 @@ class QuizManager:
         self.total_questions = len(questions)
 
         pass # Placeholder
-    ##########################################################
+    
 
     def get_question_at_index(self, index: int):
         """
@@ -45,7 +45,7 @@ class QuizManager:
         valid_index = index % self.total_questions
         return self.questions[valid_index]
     
-    ##########################################################
+    
     def next_question_index(self, direction=1):
         """
         Task: Adjust the current quiz question index based on the specified direction.
@@ -76,7 +76,7 @@ class QuizManager:
 
 
         pass  # Placeholder for implementation
-    ##########################################################
+    
 
 
 # Test Generating the Quiz
@@ -123,28 +123,27 @@ if __name__ == "__main__":
         with st.container():
             st.header("Generated Quiz Question: ")
             
-            # Task 9
-            ##########################################################
+            
             quiz_manager = QuizManager(question_bank) # Use our new QuizManager class
             # Format the question and display
             with st.form("Multiple Choice Question"):
-                ##### YOUR CODE HERE #####
+                
                 index_question = quiz_manager.get_question_at_index(0) # Use the get_question_at_index method to set the 0th index
-                ##### YOUR CODE HERE #####
+                
                 
                 # Unpack choices for radio
                 choices = []
                 for choice in index_question['choices']: # For loop unpack the data structure
-                    ##### YOUR CODE HERE #####
+                    
                     key = choice['key'] # Set the key from the index question 
                     value = choice['value']# Set the value from the index question
-                    ##### YOUR CODE HERE #####
+                    
                     choices.append(f"{key}) {value}")
                 
-                ##### YOUR CODE HERE #####
+                
                 st.write(index_question['question']) # Display the question onto streamlit
 
-                ##### YOUR CODE HERE #####
+                
                 
                 answer = st.radio( # Display the radio button with the choices
                     'Choose the correct answer',

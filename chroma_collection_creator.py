@@ -1,10 +1,9 @@
 import sys
 import os
 import streamlit as st
-#sys.path.append(os.path.abspath('../../'))
-sys.path.append(os.path.abspath('C:\\Fahira\\RadicalAI_Internship\\mission-quizify'))
-from tasks.task_3.task_3 import DocumentProcessor
-from tasks.task_4.task_4 import EmbeddingClient
+sys.path.append(os.path.abspath('C:\\Fahira\\MyProjects\\RadicalAI_Internship\\mission-quizify'))
+from document_processor import DocumentProcessor
+from embedding_client import EmbeddingClient
 
 # Import Task libraries
 from langchain_core.documents import Document
@@ -22,13 +21,9 @@ class ChromaCollectionCreator:
         self.processor = processor      # This will hold the DocumentProcessor from Task 3
         self.embed_model = embed_model  # This will hold the EmbeddingClient from Task 4
         self.db = None                  # This will hold the Chroma collection
-        # os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "C:/Fahira/RadicalAI_Internship/mission-quizify/authentication.json"
-        # Path to your service account key file
-        # key_file_path = 'C:/Fahira/RadicalAI_Internship/mission-quizify/Authentication.json'
+        
 
-# Load credentials from the service account key file
-        # credentials = service_account.Credentials.from_service_account_file(key_file_path)
-    
+
     def create_chroma_collection(self):
         """
         Task: Create a Chroma collection from the documents processed by the DocumentProcessor instance.
@@ -55,15 +50,12 @@ class ChromaCollectionCreator:
         Note: Ensure to replace placeholders like [Your code here] with actual implementation code as per the instructions above.
         """
         
-        # Step 1: Check for processed documents
+        # Check for processed documents
         if len(self.processor.pages) == 0:
             st.error("No documents found!", icon="🚨")
             return
 
-        # Step 2: Split documents into text chunks
-        # Use a TextSplitter from Langchain to split the documents into smaller text chunks
-        # https://python.langchain.com/docs/modules/data_connection/document_transformers/character_text_splitter
-        # [Your code here for splitting documents]
+        # Split documents into text chunks       
         else:
             text_splitter = CharacterTextSplitter(
             separator=".",
@@ -76,24 +68,13 @@ class ChromaCollectionCreator:
             if texts is not None:
                 st.success(f"Successfully split pages to {len(texts)} documents!", icon="✅")
 
-            # Step 3: Create the Chroma Collection
-            # https://docs.trychroma.com/
-            # Create a Chroma in-memory client using the text chunks and the embeddings model
-            # [Your code here for creating Chroma collection]
-            curr_dir = os.getcwd()
-            db_path = os.path.join(os.path.dirname(os.path.dirname(curr_dir)), 'tasks','task_5','chroma_db')
-
-            self.db = Chroma.from_documents(documents=texts,persist_directory = db_path,embedding= self.embed_model)
+            # Create the Chroma Collection
+            
+            self.db = Chroma.from_documents(texts, self.embed_model)
             if self.db:
                 st.success("Successfully created Chroma Collection!", icon="✅")
             else:
                 st.error("Failed to create Chroma Collection!", icon="🚨")
-
-            self.db.persist()
-            self.db = None
-            self.db = Chroma(persist_directory=db_path,
-                  embedding_function=self.embed_model)
-            
         
     def query_chroma_collection(self, query) -> Document:
         """
@@ -106,7 +87,6 @@ class ChromaCollectionCreator:
             docs = self.db.similarity_search_with_relevance_scores(query)
             if docs:
                 return docs[0]
-            
             else:
                 st.error("No matching documents found!", icon="🚨")
         else:
@@ -116,7 +96,7 @@ class ChromaCollectionCreator:
         return self.db.as_retriever()
 
 if __name__ == "__main__":
-    processor = DocumentProcessor() # Initialize from Task 3
+    processor = DocumentProcessor() # Initialize from document_processor
     processor.ingest_documents()
     
     embed_config = {
@@ -125,7 +105,7 @@ if __name__ == "__main__":
         "location": "us-central1"
     }
     
-    embed_client = EmbeddingClient(**embed_config) # Initialize from Task 4
+    embed_client = EmbeddingClient(**embed_config) # Initialize from embeddingclient
     
     chroma_creator = ChromaCollectionCreator(processor, embed_client)
     
@@ -135,7 +115,3 @@ if __name__ == "__main__":
         submitted = st.form_submit_button("Submit")
         if submitted:
             chroma_creator.create_chroma_collection()
-            # chroma_creator.as_retriever()
-            # query = "chatbot"
-            # docs = chroma_creator.query_chroma_collection(query=query)
-            # st.write(docs)

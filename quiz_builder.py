@@ -1,10 +1,10 @@
 import sys
 import os
 import streamlit as st
-sys.path.append(os.path.abspath('C:\\Fahira\\RadicalAI_Internship\\mission-quizify'))
-from tasks.task_3.task_3 import DocumentProcessor
-from tasks.task_4.task_4 import EmbeddingClient
-from tasks.task_5.task_5 import ChromaCollectionCreator
+sys.path.append(os.path.abspath('C:\\Fahira\\MyProjects\\RadicalAI_Internship\\mission-quizify'))
+from document_processor import DocumentProcessor
+from embedding_client import EmbeddingClient
+from chroma_collection_creator import ChromaCollectionCreator
 
 # """
 # Task: Build a Quiz Builder with Streamlit and LangChain
@@ -52,24 +52,20 @@ if __name__ == "__main__":
     screen = st.empty() # Screen 1, ingest documents
     with screen.container():
         st.header("Quizzify")
-        ####### YOUR CODE HERE #######
-        # 1) Initalize DocumentProcessor and Ingest Documents from Task 3
-        processor = DocumentProcessor() # Initialize from Task 3
+        
+        processor = DocumentProcessor() 
         processor.ingest_documents()
-        # 2) Initalize the EmbeddingClient from Task 4 with embed config
-        embedding_client = EmbeddingClient(**embed_config) # Initialize from Task 4
-        # 3) Initialize the ChromaCollectionCreator from Task 5
-        ####### YOUR CODE HERE #######
+        
+        embedding_client = EmbeddingClient(**embed_config) 
+        
+        
         chroma_creator = ChromaCollectionCreator(processor, embedding_client)
 
         with st.form("Load Data to Chroma"):
             st.subheader("Quiz Builder")
             st.write("Select PDFs for Ingestion, the topic for the quiz, and click Generate!")
             
-            ####### YOUR CODE HERE #######
-            # 4) Use streamlit widgets to capture the user's input
-            # 4) for the quiz topic and the desired number of questions
-            ####### YOUR CODE HERE #######
+           
             
             # Form to input quiz topic
             topic_input = st.text_input("Topic for Generative Quiz", "")
@@ -81,14 +77,12 @@ if __name__ == "__main__":
                         
             submitted = st.form_submit_button("Generate a Quiz!")
             if submitted:
-                ####### YOUR CODE HERE #######
-                # 5) Use the create_chroma_collection() method to create a Chroma collection from the processed documents
-                ####### YOUR CODE HERE #######
+                
                 
                 chroma_creator.create_chroma_collection()
                 
 
-                # Uncomment the following lines to test the query_chroma_collection() method
+                
                 document, similarity_score = chroma_creator.query_chroma_collection(query=topic_input) 
                 
     if document is not None:

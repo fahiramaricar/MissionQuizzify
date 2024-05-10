@@ -1,8 +1,7 @@
 # embedding_client.py
 import streamlit as st
 from langchain_google_vertexai import VertexAIEmbeddings
-from vertexai.language_models import TextEmbeddingModel
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
+
 
 class EmbeddingClient:
     """
@@ -32,14 +31,10 @@ class EmbeddingClient:
     """
     
     def __init__(self, model_name, project, location):
-        # Initialize the VertexAIEmbeddings client with the given parameters
-        # Read about the VertexAIEmbeddings wrapper from Langchain here
-        # https://python.langchain.com/docs/integrations/text_embedding/google_generative_ai
+        # Initialize the VertexAIEmbeddings client with the parameters
+        
         self.client = VertexAIEmbeddings(model_name=model_name, project=project, location=location)
-        #self.client.embed_documents()
-        # self.client= TextEmbeddingModel.from_pretrained("textembedding-gecko@001")
-        # self.client = GoogleGenerativeAIEmbeddings(model=model_name,project= project,location=location)
-
+        
         
     def embed_query(self, query):
         """
@@ -59,24 +54,21 @@ class EmbeddingClient:
         :return: A list of embeddings for the given documents.
         """
         try:
-            # Ensure documents is always treated as a list
-            # if not isinstance(documents, list):
-            #  documents = [documents]
+            
             vectors = self.client.embed_documents(documents)
             return vectors
         except AttributeError:
-            #print("Method embed_documents not defined for the client.")
+            
             return None
 
 if __name__ == "__main__":
     model_name = "textembedding-gecko@003"
-    # model_name = "models/embedding-001"
-    project = "x-signifier-421304"
+    project = "original-frame-420018"
     location = "us-central1"
 
     embedding_client = EmbeddingClient(model_name, project, location)
     text = ["hello","hi"]
-    #vectors = embedding_client.embed_query("Hello world")
+    
     vectors = embedding_client.embed_documents(["Hello World!", "First document"])
     if vectors:
         st.write(vectors)
