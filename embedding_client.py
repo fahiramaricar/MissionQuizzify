@@ -63,7 +63,7 @@ class EmbeddingClient:
 
 if __name__ == "__main__":
     model_name = "textembedding-gecko@003"
-    project = "original-frame-420018"
+    project = "snappy-striker-422913-u2"
     location = "us-central1"
 
     embedding_client = EmbeddingClient(model_name, project, location)

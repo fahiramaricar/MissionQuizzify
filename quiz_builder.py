@@ -45,7 +45,7 @@ if __name__ == "__main__":
     # Configuration for EmbeddingClient
     embed_config = {
         "model_name": "textembedding-gecko@003",
-        "project": "original-frame-420018",
+        "project": "snappy-striker-422913-u2",
         "location": "us-central1"
     }
     

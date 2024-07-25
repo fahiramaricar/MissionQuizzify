@@ -13,7 +13,7 @@ if __name__ == "__main__":
     
     embed_config = {
         "model_name": "textembedding-gecko@003",
-        "project": "original-frame-420018",
+        "project": "snappy-striker-422913-u2",
         "location": "us-central1"
     }
     if "display_quiz" not in st.session_state:
